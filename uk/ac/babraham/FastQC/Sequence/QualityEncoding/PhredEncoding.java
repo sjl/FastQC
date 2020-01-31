@@ -19,6 +19,8 @@
  */
 package uk.ac.babraham.FastQC.Sequence.QualityEncoding;
 
+import uk.ac.babraham.FastQC.FastQCConfig;
+
 public class PhredEncoding {
 
 	private String name;
@@ -28,6 +30,19 @@ public class PhredEncoding {
 	private static final int ILLUMINA_1_3_ENCODING_OFFSET = 64;
 	
 	public static PhredEncoding getFastQEncodingOffset (char lowestChar) {
+		FastQCConfig config = FastQCConfig.getInstance();
+
+		if (config.quality_encoding != null) {
+			// We're not autodetecting the encoding, but taking whatever they said.
+			switch (config.quality_encoding) {
+				case "illumina1.3": return new PhredEncoding("Illumina 1.3", ILLUMINA_1_3_ENCODING_OFFSET);
+				case "illumina1.5": return new PhredEncoding("Illumina 1.5", ILLUMINA_1_3_ENCODING_OFFSET);
+				case "illumina1.9": return new PhredEncoding("Illumina 1.9", SANGER_ENCODING_OFFSET);
+				case "sanger": return new PhredEncoding("Sanger", SANGER_ENCODING_OFFSET);
+				default: throw new IllegalArgumentException("Didn't understand quality encoding '" + config.quality_encoding + "'");
+			}
+		}
+
 		if (lowestChar < 33) {
 			throw new IllegalArgumentException("No known encodings with chars < 33 (Yours was "+lowestChar+")");
 		}

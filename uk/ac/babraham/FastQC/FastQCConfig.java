@@ -38,6 +38,7 @@ public class FastQCConfig {
 	public Boolean do_unzip = null;
 	public String lineSeparator = System.getProperty("line.separator");
 	public String sequence_format = null;
+	public String quality_encoding = null;
 	public File contaminant_file = null;
 	public File adapter_file = null;
 	public File limits_file = null;
@@ -138,6 +139,10 @@ public class FastQCConfig {
 			setSequenceFormat(System.getProperty("fastqc.sequence_format"));
 		}
 		
+		// Quality Encoding
+		if (System.getProperty("fastqc.quality_encoding") != null) {
+			setQualityEncoding(System.getProperty("fastqc.quality_encoding"));
+		}
 	};
 	
 	public void setSequenceFormat (String sequenceFormat) {
@@ -149,6 +154,14 @@ public class FastQCConfig {
 		}
 	}
 	
+	public void setQualityEncoding (String qualityEncoding) {
+		if (qualityEncoding.equals("illumina1.9") || qualityEncoding.equals("illumina1.5") || qualityEncoding.equals("illumina1.3") || qualityEncoding.equals("sanger")) {
+			quality_encoding = qualityEncoding;
+		} else {
+			throw new IllegalArgumentException("Quality encoding '"+qualityEncoding+"' wasn't recognised");
+		}
+	}
+
 	public void setCasavaMode (boolean casava) {
 		this.casava = casava;
 	}

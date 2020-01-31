@@ -90,6 +90,7 @@ my $help;
 my $outdir;
 my $unzip;
 my $format;
+my $encoding;
 my $contaminant;
 my $adapter;
 my $limits;
@@ -112,6 +113,7 @@ my $result = GetOptions('version' => \$version,
 						'outdir=s' => \$outdir,
 						'extract!' => \$unzip,
 						'format=s' => \$format,
+						'encoding=s' => \$encoding,
 						'threads=i' => \$threads,
 						'kmers=i' => \$kmer_size,
 						'casava' => \$casava,
@@ -255,6 +257,14 @@ if ($format) {
 	
 }
 
+if ($encoding) {
+	unless ($encoding eq 'illumina1.9' || $encoding eq 'illumina1.5' || $encoding eq 'illumina1.3' || $encoding eq 'sanger') {
+		die "Unrecognised quality encoding '$encoding', acceptable encodings are illumina1.3,illumina1.5,illumina1.9,sanger\n";
+	}
+	
+	push @java_args,"-Dfastqc.quality_encoding=$encoding";	
+}
+
 if ($java_bin ne 'java') {
 
 	warn "Java is $java_bin\n";
@@ -388,6 +398,11 @@ DESCRIPTION
     -f --format     Bypasses the normal sequence file format detection and
                     forces the program to use the specified format.  Valid
                     formats are bam,sam,bam_mapped,sam_mapped and fastq
+                    
+    --encoding      Bypasses the normal quality encoding detection and forces
+                    the program to use the specified encoding.  Only use this if
+                    you are absolutely sure you know what you're doing.  Valid
+                    encodings are illumina1.9,illumina1.5,illumina1.3,sanger.
                     
     -t --threads    Specifies the number of files which can be processed
                     simultaneously.  Each thread will be allocated 250MB of
